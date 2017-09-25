@@ -26,6 +26,7 @@ public class VerticalSeekBar extends View {
     private int height;
     private int width;
     private Paint paint;
+    private int maxProgress = 100;
     private int progress = 50;
 
     protected Bitmap mThumb;
@@ -94,6 +95,7 @@ public class VerticalSeekBar extends View {
         mThumb = BitmapFactory.decodeResource(getResources(), id);
         intrinsicHeight = mThumb.getHeight();
         intrinsicWidth = mThumb.getWidth();
+        mDestRect.set(0, 0, intrinsicWidth, intrinsicHeight);
         invalidate();
     }
 
@@ -114,7 +116,10 @@ public class VerticalSeekBar extends View {
      * @param height
      */
     public void setThumbSizePx(int width, int height) {
+        intrinsicHeight = width;
+        intrinsicWidth = height;
         mDestRect.set(0, 0, width, height);
+//        locationY = (int) (intrinsicHeight * 0.5f + (100 - progress) * 0.01 * (height - intrinsicHeight));
         invalidate();
     }
 
@@ -194,6 +199,10 @@ public class VerticalSeekBar extends View {
         super.onSizeChanged(w, h, oldw, oldh);
         height = getMeasuredHeight();
         width = getMeasuredWidth();
+//        intrinsicHeight = mThumb.getHeight();
+//        intrinsicWidth = mThumb.getWidth();
+//
+//        mDestRect.set(0, 0, intrinsicWidth, intrinsicHeight);
         if (locationY == -1) {
             locationX = width / 2;
             locationY = height / 2;
@@ -220,9 +229,9 @@ public class VerticalSeekBar extends View {
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (isInnerClick) {
-                    locationY = (int) (locationY + event.getY() - downY);
+                    locationY = (int) event.getY();//int) (locationY + event.getY() - downY);
                     fixLocationY();
-                    progress = (int) (100 - (locationY - intrinsicHeight * 0.5) / (height - intrinsicHeight) * 100);
+                    progress = (int) (maxProgress - (locationY - intrinsicHeight * 0.5) / (height - intrinsicHeight) * maxProgress);
                     downY = event.getY();
                     downX = event.getX();
                     if (listener != null) {
@@ -262,7 +271,7 @@ public class VerticalSeekBar extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-
+        locationY = (int) (intrinsicHeight * 0.5f + (maxProgress - progress) * (height - intrinsicHeight) / maxProgress);
         paint.setColor(unSelectColor);
         canvas.drawRect(width / 2 - mInnerProgressWidthPx / 2, mDestRect.height() / 2, width / 2 + mInnerProgressWidthPx / 2, locationY, paint);
         paint.setColor(selectColor);
@@ -276,13 +285,18 @@ public class VerticalSeekBar extends View {
     }
 
     public void setProgress(int progress) {
+        if (height == 0) {
+            ;
+            height = getMeasuredHeight();
+        }
+
         this.progress = progress;
-        locationY = (int) (intrinsicHeight * 0.5f + (100 - progress) * 0.01 * (height - intrinsicHeight));
+
         invalidate();
     }
 
     public int getProgress() {
-        return progress;
+        return progress ;
     }
 
     @Override
@@ -293,6 +307,14 @@ public class VerticalSeekBar extends View {
         super.onDetachedFromWindow();
     }
 
+
+    public void setMaxProgress(int maxProgress) {
+        this.maxProgress = maxProgress;
+    }
+
+    public int getMaxProgress() {
+        return maxProgress;
+    }
 
     private SlideChangeListener listener;
 
@@ -326,4 +348,5 @@ public class VerticalSeekBar extends View {
          */
         void onStop(VerticalSeekBar slideView, int progress);
     }
+
 }
