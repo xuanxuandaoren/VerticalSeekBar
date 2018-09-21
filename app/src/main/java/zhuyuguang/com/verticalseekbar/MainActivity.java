@@ -32,7 +32,7 @@ public class MainActivity extends Activity implements VerticalSeekBar.SlideChang
         verticalSeekBar.setProgress(80);
         verticalSeekBar.setMaxProgress(1000);
 
-
+        verticalSeekBar.setOrientation(0);
         verticalSeekBar.setOnSlideChangeListener(this);
     }
 
@@ -56,7 +56,7 @@ public class MainActivity extends Activity implements VerticalSeekBar.SlideChang
      */
     @Override
     public void onProgress(VerticalSeekBar slideView, int progress) {
-        textview.setText(progress+"");
+        textview.setText(progress + "");
     }
 
     /**

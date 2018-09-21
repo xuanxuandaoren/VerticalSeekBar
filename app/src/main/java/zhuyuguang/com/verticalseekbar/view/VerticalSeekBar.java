@@ -44,6 +44,12 @@ public class VerticalSeekBar extends View {
 
     private int unSelectColor = 0xcc888888;
     private RectF mDestRect;
+    /**
+     * 滑动方向，
+     * 0代表从下向上滑
+     * 1代表从下向上滑
+     */
+    private int orientation;
 
     /**
      * 设置未选中的颜色
@@ -52,6 +58,18 @@ public class VerticalSeekBar extends View {
      */
     public void setUnSelectColor(int uNSelectColor) {
         this.unSelectColor = uNSelectColor;
+    }
+
+    /**
+     * 设置滑动方向，
+     * 0代表从下向上滑
+     * 1代表从下向上滑
+     *
+     * @param orientation
+     */
+    public void setOrientation(int orientation) {
+        this.orientation = orientation;
+        invalidate();
     }
 
     private int selectColor = 0xaa0980ED;
@@ -231,7 +249,11 @@ public class VerticalSeekBar extends View {
                 if (isInnerClick) {
                     locationY = (int) event.getY();//int) (locationY + event.getY() - downY);
                     fixLocationY();
+
                     progress = (int) (maxProgress - (locationY - intrinsicHeight * 0.5) / (height - intrinsicHeight) * maxProgress);
+                    if (orientation == 1) {
+                        progress = maxProgress - progress;
+                    }
                     downY = event.getY();
                     downX = event.getX();
                     if (listener != null) {
@@ -271,10 +293,14 @@ public class VerticalSeekBar extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        locationY = (int) (intrinsicHeight * 0.5f + (maxProgress - progress) * (height - intrinsicHeight) / maxProgress);
-        paint.setColor(unSelectColor);
+        if (orientation == 0) {
+            locationY = (int) (intrinsicHeight * 0.5f + (maxProgress - progress) * (height - intrinsicHeight) / maxProgress);
+        } else {
+            locationY = (int) (intrinsicHeight * 0.5f + (progress) * (height - intrinsicHeight) / maxProgress);
+        }
+        paint.setColor(orientation == 0 ? unSelectColor : selectColor);
         canvas.drawRect(width / 2 - mInnerProgressWidthPx / 2, mDestRect.height() / 2, width / 2 + mInnerProgressWidthPx / 2, locationY, paint);
-        paint.setColor(selectColor);
+        paint.setColor(orientation == 0 ? selectColor : unSelectColor);
         canvas.drawRect(width / 2 - mInnerProgressWidthPx / 2, locationY, width / 2 + mInnerProgressWidthPx / 2, height - mDestRect.height() / 2, paint);
         canvas.save();
         canvas.translate(width / 2 - mDestRect.width() / 2, locationY - mDestRect.height() / 2);
@@ -286,7 +312,6 @@ public class VerticalSeekBar extends View {
 
     public void setProgress(int progress) {
         if (height == 0) {
-            ;
             height = getMeasuredHeight();
         }
 
@@ -296,7 +321,7 @@ public class VerticalSeekBar extends View {
     }
 
     public int getProgress() {
-        return progress ;
+        return progress;
     }
 
     @Override
