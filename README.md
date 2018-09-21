@@ -1,6 +1,22 @@
 # VerticalSeekBar
+
 竖直滑动条 ，用起来比较方便
-###V erticalSeekBar 竖直滑动条
+
+### VerticalSeekBar 竖直滑动条
+
+#### 新加功能
+
+
+```
+  /**
+     * 设置滑动方向，
+     * 0代表从下向上滑
+     * 1代表从下向上滑
+     *
+     * @param orientation
+     */
+    public void setOrientation(int orientation) 
+```
 
 #### 功能
 ##### 默认模式
